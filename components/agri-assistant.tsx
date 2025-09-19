@@ -19,56 +19,88 @@ import {
   Leaf,
   CloudRain,
   BarChart3,
+  FlaskConical,
+  Sprout,
+  ChevronDown,
+  Warehouse,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 
-// Sample predefined responses for offline mode
+// Sample predefined responses for offline mode in English - EXPANDED
 const offlineResponses = [
   {
-    query: "गेहूं में पीला रोग",
+    query: "yellow rust in wheat",
     response:
-      "गेहूं में पीला रोग (Yellow Rust) एक कवक जनित रोग है। इसके नियंत्रण के लिए प्रोपिकोनाजोल 25% EC का 0.1% घोल (1 मिली दवा प्रति लीटर पानी) का छिड़काव करें।",
+      "Yellow Rust is a fungal disease. To control it, spray Propiconazole 25% EC at a 0.1% solution (1 ml of medicine per liter of water).",
   },
   {
-    query: "टमाटर की खेती",
+    query: "tomato cultivation",
     response:
-      "टमाटर की खेती के लिए उपयुक्त मिट्टी दोमट या बलुई दोमट होती है। पौध रोपण 60 x 45 सेमी की दूरी पर करें। नत्रजन, फास्फोरस और पोटाश का संतुलित उपयोग करें।",
+      "The suitable soil for tomato cultivation is loamy or sandy loam. Plant seedlings at a distance of 60 x 45 cm. Use a balanced amount of Nitrogen, Phosphorus, and Potash.",
   },
   {
-    query: "फसल बीमा",
+    query: "crop insurance",
     response:
-      "प्रधानमंत्री फसल बीमा योजना के अंतर्गत आप अपनी फसल का बीमा करा सकते हैं। इसके लिए नजदीकी बैंक या कृषि विभाग से संपर्क करें।",
+      "You can get your crops insured under the Pradhan Mantri Fasal Bima Yojana (PMFBY). For this, contact your nearest bank or agriculture department office.",
   },
   {
-    query: "सिंचाई",
+    query: "irrigation",
     response:
-      "ड्रिप सिंचाई और स्प्रिंकलर सिंचाई जल संरक्षण के प्रभावी तरीके हैं। इनसे 30-50% पानी की बचत होती है और फसल की उपज भी बढ़ती है।",
+      "Drip irrigation and sprinkler irrigation are effective methods for water conservation. They save 30-50% of water and also increase crop yield.",
   },
   {
-    query: "जैविक खेती",
+    query: "organic farming",
     response:
-      "जैविक खेती में रासायनिक उर्वरकों और कीटनाशकों के बजाय प्राकृतिक विधियों का उपयोग किया जाता है। जैविक खाद, जीवामृत, और नीम आधारित कीटनाशक प्रभावी विकल्प हैं।",
+      "In organic farming, natural methods are used instead of chemical fertilizers and pesticides. Organic manure, jeevamrut, and neem-based pesticides are effective alternatives.",
   },
+  {
+    query: "soil test",
+    response: "Soil testing is crucial for understanding nutrient deficiencies. Collect soil samples from different parts of your field and get them tested at a local agricultural center.",
+  },
+   {
+    query: "fertilizer",
+    response: "NPK stands for Nitrogen (N), Phosphorus (P), and Potassium (K). The right ratio depends on your crop and soil health.",
+  },
+  {
+    query: "rice blast",
+    response: "Rice blast is a serious fungal disease. Use disease-resistant varieties and ensure proper water management. Fungicides like Tricyclazole can be effective.",
+  },
+  {
+    query: "paddy",
+    response: "For paddy, water management is key. Maintain 2-5 cm of water in the field after transplanting. Use a balanced dose of NPK fertilizers for best results.",
+  }
 ]
 
-// Sample suggested queries
+// Sample suggested queries in English - EXPANDED
 const suggestedQueries = [
   {
-    text: "गेहूं में पीला रोग कैसे रोकें?",
+    text: "How to control blast in rice?",
     icon: <Leaf className="h-3 w-3" />,
   },
   {
-    text: "इस मौसम में क्या बोना चाहिए?",
+    text: "Best time to sow wheat?",
     icon: <CloudRain className="h-3 w-3" />,
   },
   {
-    text: "फसल बीमा कैसे करवाएं?",
+    text: "How to get crop insurance?",
     icon: <Lightbulb className="h-3 w-3" />,
   },
   {
-    text: "आलू का अच्छा बाज़ार भाव कब मिलेगा?",
+    text: "What is the market price for paddy?",
     icon: <BarChart3 className="h-3 w-3" />,
+  },
+   {
+    text: "Fertilizer dose for wheat?",
+    icon: <FlaskConical className="h-3 w-3" />,
+  },
+    {
+    text: "How to improve soil health?",
+    icon: <Sprout className="h-3 w-3" />,
+  },
+   {
+    text: "How to store grains safely?",
+    icon: <Warehouse className="h-3 w-3" />,
   },
 ]
 
@@ -84,7 +116,7 @@ export default function AgriAssistant() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
-      content: "नमस्ते! मैं आपका कृषि सहायक हूँ। आप मुझसे खेती-बाड़ी, फसलों, मौसम, या बाज़ार भाव के बारे में कोई भी प्रश्न पूछ सकते हैं।",
+      content: "Hello! I am your agricultural assistant. You can ask me any question about farming, crops, weather, or market prices.",
       sender: "bot",
       timestamp: new Date(),
     },
@@ -94,6 +126,7 @@ export default function AgriAssistant() {
   const [isSpeaking, setIsSpeaking] = useState(false)
   const [isOnline, setIsOnline] = useState(true)
   const [isLoading, setIsLoading] = useState(false)
+  const [showSuggestions, setShowSuggestions] = useState(true); // State for accordion
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const { toast } = useToast()
 
@@ -137,39 +170,84 @@ export default function AgriAssistant() {
     // Simulate AI response
     setTimeout(() => {
       let botResponse = ""
+      const lowerCaseInput = inputValue.toLowerCase()
 
       if (isOnline) {
-        // Online mode - simulate AI response
-        // In a real app, this would call an AI API
-        if (inputValue.toLowerCase().includes("मौसम") || inputValue.toLowerCase().includes("weather")) {
+        // Online mode - simulate AI response with more keyword matching
+        if (lowerCaseInput.includes("weather")) {
           botResponse =
-            "आज जयपुर में मौसम साफ रहेगा। तापमान 32°C रहने की संभावना है। अगले 2 दिनों में हल्की बारिश हो सकती है। फसल सिंचाई के लिए यह अच्छा समय है।"
+            "Today's weather in Hyderabad will be partly cloudy. The temperature is expected to be around 31°C. Light showers are possible in the next 2 days. This is a good time for crop irrigation."
         } else if (
-          inputValue.toLowerCase().includes("कीट") ||
-          inputValue.toLowerCase().includes("रोग") ||
-          inputValue.toLowerCase().includes("disease")
+          lowerCaseInput.includes("pest") ||
+          lowerCaseInput.includes("disease")
         ) {
           botResponse =
-            "फसल में कीट या रोग के लक्षण दिखने पर तुरंत उपचार करें। आप हमारे रोग पहचान टूल का उपयोग करके सटीक निदान प्राप्त कर सकते हैं। फोटो अपलोड करें और विशेषज्ञ सलाह पाएं।"
+            "Could you please specify the crop and the disease? For example, 'yellow rust in wheat' or 'blast disease in rice'."
         } else if (
-          inputValue.toLowerCase().includes("बाज़ार") ||
-          inputValue.toLowerCase().includes("मूल्य") ||
-          inputValue.toLowerCase().includes("price")
+            lowerCaseInput.includes("rice") || lowerCaseInput.includes("paddy")
+        ) {
+             if (lowerCaseInput.includes("blast")) {
+                 botResponse = "For Rice Blast disease, ensure the field is not overly fertilized with nitrogen. Maintain shallow water and consider spraying fungicides like Tricyclazole or Azoxystrobin after consulting a local expert."
+             } else if (lowerCaseInput.includes("fertilizer")) {
+                 botResponse = "For paddy, the general recommendation is 120:60:40 kg/ha of N:P:K. Apply phosphorus and potassium as a basal dose, and nitrogen in 3 split doses for better efficiency."
+             } else {
+                 botResponse = "Rice is a major crop in this region. Are you asking about disease control, fertilizer management, or market price?"
+             }
+        } else if (
+            lowerCaseInput.includes("wheat")
+        ) {
+            if (lowerCaseInput.includes("rust")) {
+                botResponse = "To control Yellow Rust in wheat, remove infected plants early. Avoid excessive irrigation. You can spray Propiconazole 25% EC at 1 ml/liter of water as a preventive measure."
+            } else if (lowerCaseInput.includes("sow") || lowerCaseInput.includes("season")) {
+                botResponse = "The ideal time for sowing wheat in the Hyderabad region is from the last week of October to the first week of November, when the temperature has cooled down."
+            } else {
+                botResponse = "For wheat, what information do you need? Sowing time, disease control, or irrigation schedule?"
+            }
+        } else if (
+            lowerCaseInput.includes("grain") && lowerCaseInput.includes("store")
+        ) {
+            botResponse = "To store grains safely, ensure they are properly dried to a moisture content below 12%. Use clean, airtight containers or bags (like PICS bags) and store them in a cool, dry place away from pests. Using neem leaves can also help."
+        }
+        else if (
+          lowerCaseInput.includes("market") ||
+          lowerCaseInput.includes("price")
         ) {
           botResponse =
-            "वर्तमान में गेहूं का औसत बाज़ार मूल्य ₹2240 प्रति क्विंटल है। आप अपने नज़दीकी मंडी में बेहतर मूल्य के लिए हमारे मार्केट प्राइस सेक्शन में जाकर तुलना कर सकते हैं।"
+            "Market prices fluctuate daily. For which crop are you asking the price? For example, 'market price for paddy'."
+        } else if (
+            lowerCaseInput.includes("fertilizer") ||
+            lowerCaseInput.includes("npk") ||
+            lowerCaseInput.includes("urea")
+        ) {
+            botResponse = "Fertilizer requirements depend heavily on the crop and soil health. For a detailed recommendation, please specify the crop and, if possible, the results of a recent soil test."
+        } else if (
+            lowerCaseInput.includes("soil") ||
+            lowerCaseInput.includes("ph")
+        ) {
+            botResponse = "Good soil health is vital. It's recommended to get your soil tested once every 2-3 years to check nutrient levels and pH. This helps in applying the right amount of fertilizers."
+        } else if (
+            lowerCaseInput.includes("sow") ||
+            lowerCaseInput.includes("plant") ||
+            lowerCaseInput.includes("season")
+        ) {
+             botResponse = "In Hyderabad, September is a good time to prepare for the Rabi crop season. You can consider crops like Jowar, Maize, Bengal gram, and sunflower. Ensure the field is well-ploughed."
+        } else if (
+            lowerCaseInput.includes("yield") ||
+            lowerCaseInput.includes("increase")
+        ) {
+            botResponse = "To increase crop yield, focus on using high-quality certified seeds, ensuring balanced nutrition through soil testing, implementing proper irrigation techniques, and managing weeds and pests effectively."
         } else {
           botResponse =
-            "आपके प्रश्न के लिए धन्यवाद। मैं आपकी सहायता करने के लिए हूँ। क्या आप अपने प्रश्न को और अधिक विस्तार से बता सकते हैं या किसी विशिष्ट फसल के बारे में पूछना चाहते हैं?"
+            "I'm sorry, I couldn't find a specific answer for that. You can ask me about crop diseases, market prices, fertilizers, soil health, or what to plant."
         }
       } else {
         // Offline mode - use predefined responses
         const matchedResponse = offlineResponses.find((item) =>
-          inputValue.toLowerCase().includes(item.query.toLowerCase()),
+          lowerCaseInput.includes(item.query.toLowerCase()),
         )
         botResponse = matchedResponse
           ? matchedResponse.response
-          : "मैं वर्तमान में ऑफलाइन मोड में हूँ और सीमित जानकारी प्रदान कर सकता हूँ। इंटरनेट कनेक्शन होने पर अधिक सटीक जानकारी मिलेगी।"
+          : "I am currently in offline mode and can provide limited information. For more accurate information, please connect to the internet."
       }
 
       const botMessage: Message = {
@@ -189,18 +267,18 @@ export default function AgriAssistant() {
       // Start recording
       setIsRecording(true)
       toast({
-        title: "आवाज रिकॉर्डिंग शुरू",
-        description: "कृपया अपना प्रश्न बोलें...",
+        title: "Voice recording started",
+        description: "Please speak your question...",
         duration: 3000,
       })
 
       // Simulate voice recognition (in a real app, this would use the Web Speech API)
       setTimeout(() => {
         setIsRecording(false)
-        setInputValue("मेरी गेहूं की फसल में पीला रोग लगा है, क्या करूं?")
+        setInputValue("My wheat crop has yellow rust, what should I do?")
         toast({
-          title: "आवाज रिकॉर्डिंग पूरी हुई",
-          description: "आपका प्रश्न दर्ज किया गया है।",
+          title: "Voice recording complete",
+          description: "Your question has been transcribed.",
           duration: 3000,
         })
       }, 3000)
@@ -208,8 +286,8 @@ export default function AgriAssistant() {
       // Stop recording
       setIsRecording(false)
       toast({
-        title: "आवाज रिकॉर्डिंग रुकी",
-        description: "रिकॉर्डिंग रोक दी गई है।",
+        title: "Voice recording stopped",
+        description: "Recording has been stopped.",
         duration: 3000,
       })
     }
@@ -220,18 +298,17 @@ export default function AgriAssistant() {
     if (isSpeaking) {
       // Stop speaking
       setIsSpeaking(false)
-      // In a real app, this would use the Web Speech API to stop speaking
       toast({
-        title: "पठन रुका",
-        description: "पाठ का पठन रोक दिया गया है।",
+        title: "Reading stopped",
+        description: "Text-to-speech has been stopped.",
         duration: 3000,
       })
     } else {
       // Start speaking
       setIsSpeaking(true)
       toast({
-        title: "पठन शुरू",
-        description: "पाठ का पठन शुरू किया गया है।",
+        title: "Reading started",
+        description: "Started reading the text.",
         duration: 3000,
       })
 
@@ -245,6 +322,13 @@ export default function AgriAssistant() {
   // Handle suggested query click
   const handleSuggestedQuery = (query: string) => {
     setInputValue(query)
+    // Automatically send the message when a suggestion is clicked
+    // This is a UX improvement
+    setTimeout(() => {
+        // We find the send button and click it programmatically
+        // The timeout ensures the state update for inputValue is processed first
+        document.getElementById('send-button')?.click();
+    }, 100);
   }
 
   return (
@@ -270,15 +354,15 @@ export default function AgriAssistant() {
                 <AvatarFallback className="bg-green-100 text-green-800">AB</AvatarFallback>
               </Avatar>
               <div>
-                <h3 className="font-medium">कृषि सहायक (AgriBot)</h3>
+                <h3 className="font-medium">Agri Assistant (AgriBot)</h3>
                 <div className="flex items-center gap-1 text-xs">
                   {isOnline ? (
                     <Badge className="bg-green-500 text-white px-1 py-0 text-[10px] flex items-center gap-1">
-                      <Wifi className="h-2 w-2" /> ऑनलाइन
+                      <Wifi className="h-2 w-2" /> Online
                     </Badge>
                   ) : (
                     <Badge className="bg-yellow-500 text-white px-1 py-0 text-[10px] flex items-center gap-1">
-                      <WifiOff className="h-2 w-2" /> ऑफलाइन
+                      <WifiOff className="h-2 w-2" /> Offline
                     </Badge>
                   )}
                 </div>
@@ -349,23 +433,31 @@ export default function AgriAssistant() {
             </div>
           </div>
 
-          {/* Suggested queries */}
+          {/* Suggested queries ACCORDION */}
           <div className="p-2 border-t bg-gray-50">
-            <p className="text-xs text-gray-500 mb-2">सुझाए गए प्रश्न:</p>
-            <div className="flex flex-wrap gap-2">
-              {suggestedQueries.map((query, index) => (
-                <Button
-                  key={index}
-                  variant="outline"
-                  size="sm"
-                  className="text-xs h-auto py-1 px-2"
-                  onClick={() => handleSuggestedQuery(query.text)}
-                >
-                  {query.icon}
-                  <span className="ml-1">{query.text}</span>
-                </Button>
-              ))}
-            </div>
+            <button 
+                className="w-full flex justify-between items-center text-xs text-gray-600 font-medium"
+                onClick={() => setShowSuggestions(!showSuggestions)}
+            >
+                <span>Suggested Queries</span>
+                <ChevronDown className={cn("h-4 w-4 transition-transform", showSuggestions && "rotate-180")} />
+            </button>
+            {showSuggestions && (
+                <div className="mt-2 flex flex-wrap gap-2">
+                {suggestedQueries.map((query, index) => (
+                    <Button
+                    key={index}
+                    variant="outline"
+                    size="sm"
+                    className="text-xs h-auto py-1 px-2"
+                    onClick={() => handleSuggestedQuery(query.text)}
+                    >
+                    {query.icon}
+                    <span className="ml-1">{query.text}</span>
+                    </Button>
+                ))}
+                </div>
+            )}
           </div>
 
           {/* Input */}
@@ -380,13 +472,14 @@ export default function AgriAssistant() {
                 <Mic className="h-4 w-4" />
               </Button>
               <Input
-                placeholder="अपना प्रश्न यहां लिखें..."
+                placeholder="Type your question here..."
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
                 className="flex-1"
               />
               <Button
+                id="send-button"
                 className="flex-shrink-0 bg-green-600 hover:bg-green-700"
                 onClick={handleSendMessage}
                 disabled={!inputValue.trim()}
@@ -397,7 +490,7 @@ export default function AgriAssistant() {
             {!isOnline && (
               <p className="text-xs text-yellow-600 mt-2 flex items-center gap-1">
                 <WifiOff className="h-3 w-3" />
-                ऑफलाइन मोड: सीमित प्रतिक्रियाएँ उपलब्ध हैं
+                Offline mode: Limited responses available.
               </p>
             )}
           </div>
@@ -406,3 +499,4 @@ export default function AgriAssistant() {
     </>
   )
 }
+

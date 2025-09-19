@@ -52,20 +52,20 @@ export default function UserMenu() {
         <DropdownMenuSeparator />
         <DropdownMenuItem>
           <User className="mr-2 h-4 w-4" />
-          <span>प्रोफाइल</span>
+          <span>profile</span>
         </DropdownMenuItem>
         <DropdownMenuItem>
           <Settings className="mr-2 h-4 w-4" />
-          <span>सेटिंग्स</span>
+          <span>settings</span>
         </DropdownMenuItem>
         <DropdownMenuItem>
           <HelpCircle className="mr-2 h-4 w-4" />
-          <span>सहायता</span>
+          <span>helps</span>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout}>
           <LogOut className="mr-2 h-4 w-4" />
-          <span>लॉगआउट</span>
+          <span>logout</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
